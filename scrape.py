@@ -15,7 +15,7 @@ import os.path
 #req=requests.get(url)
 #
 #dfs=pd.read_html(req.text)
-
+#给定年份和周数，获取某一周所有上映的影片的周末票房情况对应的df
 def getWeekendData(yr,wk):
     url="https://www.boxofficemojo.com/weekend/chart/?yr={}&wknd={}&p=.htm".format(yr,wk)
     req=requests.get(url)
@@ -28,8 +28,19 @@ def getWeekendData(yr,wk):
     df['ith week']=wk
     return df
 
+#抓取前50位影星的链接（拿到这些链接后怎么进一步抓取，自己想一想）
+def getStarLinks():
+    url="https://www.boxofficemojo.com/people/?view=Actor&pagenum=1&sort=sumgross&order=DESC&&p=.htm"
+    req=requests.get(url)
+    soup=BeautifulSoup(req.text,"html.parser")
+    links=soup.select("a[href^='./chart/?view=Actor&id=']")
+    url1="www.boxofficemojo.com/people"
+    #print([(url1+link['href'][1:]) for link in links])
+    #抓取特定的链接
+    links=[(url1+link['href'][1:]) for link in links]
+    return links
 
-#使用方法：
+#使用方法：获取一系列周的数据
 #df=getWeekendsData([(2018,1,53)])
 def getWeekendsData(arr):
     df=None
@@ -38,7 +49,8 @@ def getWeekendsData(arr):
             df=getWeekendData(item[0],wk) if df is None else df.append(getWeekendData(item[0],wk))
             print("{} {} is done".format(item[0],wk))
     return df
-            
+
+#把数据写入week.csv
 def getWeekendsDataAndWrite(arr):
     df=getWeekendsData(arr)
     if(os.path.exists("week.csv")):
@@ -55,5 +67,4 @@ def generateDataFrame():
     df.to_csv("dataframe.csv",index=False)
     return df        
 
-df=generateDataFrame()
-    
+getStarLinks()
