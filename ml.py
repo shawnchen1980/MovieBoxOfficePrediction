@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from re import sub
 from decimal import Decimal
 #%matplotlib inline
-
+#将一个形如$1,000的字符串变为整数1000
 def moneyToNum(money):
     value = Decimal(sub(r'[^\d.]', '', money))
     return int(value)
@@ -57,3 +57,6 @@ ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
 ax.set_xlabel('Measured')
 ax.set_ylabel('Predicted')
 plt.show()
+from sklearn.metrics import r2_score
+
+print(r2_score(y_test, y_pred))

@@ -10,4 +10,9 @@ Windows Button in the lower left corner -> List of programs -> anaconda -> anaco
 Then inside the anaconda prompt, copy-paste and enter the following line command:
 
 conda install -c conda-forge keras
+
 pip install opencv_python
+
+
+email:chenxiao@sincereedu.com
+
