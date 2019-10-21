@@ -19,16 +19,18 @@ email:chenxiao@sincereedu.com
 
 1 生成训练数据集，要求包含以下字段：
 数据框架一
-year-年份
-week-周次
-weekTop12GrossHistory-近n年当周票房榜前12票房总和平均
-weekOverallGrossHistory-近n年当周票房总和平均
-weekTotalMoviesHistory-近n年当周电影总数平均
-lastWeekTop12Gross-上周票房榜前12票房总和
-lastWeekOverallGross-上周票房总和
-lastWeekMovies-上周电影总数
-lastWeekTop1Gross-上周票房冠军票房
-lastWeekTop1WeekSpan-上周票房冠军已放映周数
+<ul>
+<li>year-年份</li>
+<li>week-周次</li>
+<li>weekTop12GrossHistory-近n年当周票房榜前12票房总和平均</li>
+<li>weekOverallGrossHistory-近n年当周票房总和平均</li>
+<li>weekTotalMoviesHistory-近n年当周电影总数平均</li>
+<li>lastWeekTop12Gross-上周票房榜前12票房总和</li>
+<li>lastWeekOverallGross-上周票房总和</li>
+<li>lastWeekMovies-上周电影总数</li>
+<li>lastWeekTop1Gross-上周票房冠军票房</li>
+<li>lastWeekTop1WeekSpan-上周票房冠军已放映周数</li>
+</ul>
 相关链接：
 https://www.boxofficemojo.com/weekend/?yr=2018&p=.htm
 https://www.boxofficemojo.com/weekend/?view=wknd&wknd=1&sort=year&order=DESC&p=.htm
