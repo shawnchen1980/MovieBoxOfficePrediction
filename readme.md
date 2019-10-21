@@ -71,9 +71,12 @@ https://www.boxofficemojo.com/people/?view=Director&sort=sumgross&order=DESC&p=.
 相关链接：
 https://www.boxofficemojo.com/weekend/chart/?yr=2019&wknd=42&p=.htm
 
-2 
+2 画图
+a 画一年当中每周的票房平均与影片数平均分布图
 
+3 对论文中上面用到的特征数据进行描述
 
+4 完成查新报告
 
 email:chenxiao@sincereedu.com
 
