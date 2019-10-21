@@ -11,6 +11,7 @@ Then inside the anaconda prompt, copy-paste and enter the following line command
 
 conda install -c conda-forge keras
 
+
 email:chenxiao@sincereedu.com
 
 10.21 任务计划
@@ -65,3 +66,8 @@ weekendGross-本周末票房（目标变量）
 https://www.boxofficemojo.com/weekend/chart/?yr=2019&wknd=42&p=.htm
 
 2 
+
+
+
+email:chenxiao@sincereedu.com
+
