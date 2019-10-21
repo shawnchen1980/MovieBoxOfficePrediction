@@ -18,7 +18,7 @@ email:chenxiao@sincereedu.com
 
 
 1 生成训练数据集，要求包含以下字段：
-数据框架一
+<p>数据框架一</p>
 <ul>
 <li>year-年份</li>
 <li>week-周次</li>
@@ -37,14 +37,16 @@ https://www.boxofficemojo.com/weekend/?view=wknd&wknd=1&sort=year&order=DESC&p=.
 
 
 
-数据框架二
-year-年份
-week-周次
-title-片名
-starNum-明星数
-director-是否名导演（0或1）
-theater-上映影院数
-weekendGross-本周末票房（目标变量）
+<p>数据框架二</p>
+<ul>
+<li>year-年份</li>
+<li>week-周次</li>
+<li>title-片名</li>
+<li>starNum-明星数</li>
+<li>director-是否名导演（0或1）</li>
+<li>theater-上映影院数</li>
+<li>weekendGross-本周末票房（目标变量）</li>
+</ul>
 相关链接：
 https://www.boxofficemojo.com/people/?view=Actor&pagenum=1&sort=sumgross&order=DESC&&p=.htm
 https://www.boxofficemojo.com/people/chart/?view=Actor&id=samuelljackson.htm
@@ -54,16 +56,18 @@ https://www.boxofficemojo.com/people/?view=Director&sort=sumgross&order=DESC&p=.
 一部影片可以有多个名演员参演，对于名导演，同样先抓取前n位名导演对应的链接，然后进入链接抓取片名列表，此时片名列表无需与导演名绑定
 因为我们只需要知道某部影片是不是名导演执导（0或1），但需要知道有几个名演员参演
 
-数据框架三
-year-年份
-week-周次
-title-片名
-LW-上周排名
-LWGross-上周票房
-GrossTotal-到上周为止的票房总计
-weekNum-上映周数
-theater-上映影院数（本周）
-weekendGross-本周末票房（目标变量）
+<p>数据框架三</p>
+<ul>
+<li>year-年份</li>
+<li>week-周次</li>
+<li>title-片名</li>
+<li>LW-上周排名</li>
+<li>LWGross-上周票房</li>
+<li>GrossTotal-到上周为止的票房总计</li>
+<li>weekNum-上映周数</li>
+<li>theater-上映影院数（本周）</li>
+<li>weekendGross-本周末票房（目标变量）</li>
+</ul>
 相关链接：
 https://www.boxofficemojo.com/weekend/chart/?yr=2019&wknd=42&p=.htm
 
