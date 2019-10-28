@@ -67,4 +67,72 @@ def generateDataFrame():
     df.to_csv("dataframe.csv",index=False)
     return df        
 
-getStarLinks()
+def getWeekendDataByWeek(wk):
+    url="https://www.boxofficemojo.com/weekend/by-week/{}/".format(wk)
+    req=requests.get(url)
+    df=pd.read_html(req.text)[0]
+    df=df.iloc[:,0:8]
+#    df["week"]=wk
+    df.insert(1,"week",wk)
+    return df
+    
+def getWeekendDataByWeeks(start,end):
+    if(os.path.exists("weeks.csv")):
+        df=pd.read_csv("weeks.csv")
+    else:
+        df=getWeekendDataByWeek(start)
+        start+=1
+    for wk in range(start,end):
+        df=df.append(getWeekendDataByWeek(wk))
+    df.to_csv("weeks.csv",index=False)
+    return df
+
+def getWeekendDataByYearWeek(yr,wk):
+    url=f"https://www.boxofficemojo.com/weekend/{yr}W{wk:02}/?ref_=bo_wey_table_1"
+    req=requests.get(url)
+    df=pd.read_html(req.text)[0]
+    df=df.iloc[:,0:11]
+#    df["week"]=wk
+    df.insert(0,"year",yr)
+    df.insert(1,"week",wk)
+    return df
+
+def getWeekendDataByYearWeeks(yr,start,end):
+    if(os.path.exists("yearweeks.csv")):
+        df=pd.read_csv("yearweeks.csv")
+    else:
+        df=getWeekendDataByYearWeek(yr,start)
+        start+=1
+    for wk in range(start,end):
+        df=df.append(getWeekendDataByYearWeek(yr,wk))
+        print(f"{yr}-{wk} done!")
+    df.to_csv("yearweeks.csv",index=False)
+    return df
+
+def getWeekendDataByYear(yr):
+    url="https://www.boxofficemojo.com/weekend/by-year/{}/".format(yr)
+    req=requests.get(url)
+    soup=BeautifulSoup(req.text,"html.parser")
+    links=list(map(lambda x:x['href'],soup.select(".a-text-left a[href^='/weekend']")))
+    df=pd.read_html(req.text)[0]
+    cols=['Dates',  'Week' ,'Top 10 Gross', '%± LW', 'Overall Gross', '%± LW.1', 'Releases', '#1 Release' ]
+    df=df.loc[:,cols]
+    df['link']=links
+#    df["week"]=wk
+    df.insert(1,"year",yr)
+    return df
+
+#年份从近到远
+def getWeekendDataByYears(start,end):
+    if(os.path.exists("years.csv")):
+        df=pd.read_csv("years.csv")
+    else:
+        df=getWeekendDataByYear(start)
+        start-=1
+    for yr in range(start,end,-1):
+        df=df.append(getWeekendDataByYear(yr))
+        print(f"{yr} done!")
+    df.to_csv("years.csv",index=False)
+    return df
+
+df=getWeekendDataByYears(2019,2007)

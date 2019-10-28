@@ -32,8 +32,16 @@ email:chenxiao@sincereedu.com
 <li>lastWeekTop1WeekSpan-上周票房冠军已放映周数</li>
 </ul>
 相关链接：
-https://www.boxofficemojo.com/weekend/?yr=2018&p=.htm
-https://www.boxofficemojo.com/weekend/?view=wknd&wknd=1&sort=year&order=DESC&p=.htm
+https://www.boxofficemojo.com/weekend/by-year/2018/（最新链接）
+https://www.boxofficemojo.com/weekend/?yr=2018&p=.htm（已过期）
+https://www.boxofficemojo.com/weekend/?view=wknd&wknd=1&sort=year&order=DESC&p=.htm（已过期）
+<p>
+思路：根据最新链接可以获取某一年每一周的票房概况，还可以获得某一年每一周票房具体情况页面的链接，先用最新链接抓取2008-2019
+近十年的所有周末票房概况数据，同时抓取每一周具体票房的链接，结果保存到years.csv文件中，然后对节假日周次的数据进行人肉清洗，
+（数据中对于假日周末会计算两次，需要把重复的票房数据去除）,然后针对csv文件中留下的每周详情链接进一步抓取数据，获得每周票房冠军
+相关的数据，至此我们可以获得数据包括（年份，周次，本周前十票房总和，本周票房总和，本周上映数，本周票房冠军票房，本周票房冠军已放映周数）
+接下来用pandas.DataFrame.shift和join即可
+</p>
 
 
 
