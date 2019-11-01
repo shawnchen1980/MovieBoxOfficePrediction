@@ -10,6 +10,8 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import requests
 import os.path
+from decimal import Decimal
+from re import sub
 #url="https://www.boxofficemojo.com/weekend/chart/?yr=2018&wknd=01&p=.htm"
 #
 #req=requests.get(url)
@@ -135,4 +137,127 @@ def getWeekendDataByYears(start,end):
     df.to_csv("years.csv",index=False)
     return df
 
-df=getWeekendDataByYears(2019,2007)
+def generateMovieWeekendDataByLink(yr,wk,url):
+    if(os.path.exists(f"dataset/{yr}-{wk}.csv")):
+#        df=pd.read_csv(f"dataset/{yr}-{wk}.csv")
+        print(f"pass {yr}-{wk}.csv")
+        return 0
+    url="https://www.boxofficemojo.com"+url
+    df=pd.read_html(url)[0]
+    df=df.iloc[:,:11]
+    df.insert(0,'year',yr)
+    df.insert(1,'week',wk)
+    df.to_csv(f"dataset/{yr}-{wk}.csv",index=False)
+    print(f"generate {yr}-{wk}.csv")
+    return 1
+
+def read_csv(filepath):
+     if os.path.splitext(filepath)[1] != '.csv':
+          return  # or whatever
+     seps = [',', ';', '\t']                    # ',' is default
+     encodings = [None, 'utf-8', 'ISO-8859-1']  # None is default
+     for sep in seps:
+         for encoding in encodings:
+              try:
+                  return pd.read_csv(filepath, encoding=encoding, sep=sep)
+              except Exception:  # should really be more specific 
+                  pass
+     raise ValueError("{!r} is has no encoding in {} or seperator in {}"
+                      .format(filepath, encodings, seps))
+#将一个形如$1,000的字符串变为整数1000
+def moneyToNum(money):
+    value = Decimal(sub(r'[^\d.]', '', money))
+    return int(value)
+
+def formatYears():
+    if(not os.path.exists("years.csv")):
+        return
+    df=read_csv("years.csv")
+    df["Top 10 Gross"]=df["Top 10 Gross"].apply(lambda x:moneyToNum(x))
+    df["Overall Gross"]=df["Overall Gross"].apply(lambda x:moneyToNum(x))
+    df.to_csv("yearsFormated.csv",index=False)
+    return
+
+def generateMovieWeekendFiles(limit=35):
+    df=pd.read_csv("yearsFormated.csv")
+    cfgs=list(zip(df["Year"],df["Week"],df["link"]))
+    count=0
+    for cfg in cfgs:
+        count+=generateMovieWeekendDataByLink(cfg[0],cfg[1],cfg[2])
+        if(count>limit):
+            break
+    return
+
+
+def getYearDataByYear(yr):
+    url=f"https://www.boxofficemojo.com/year/{yr}/"
+    req=requests.get(url)
+    df=pd.read_html(req.text)[0]
+    cols=['Rank', 'Release',  'Distributor', 'Gross', 'Max Th', 'Opening', '% of Total', 'Open Th', 'Open', 'Close']
+    df=df.loc[:,cols]
+    soup=BeautifulSoup(req.text,"html.parser")
+    links=list(map(lambda x:x['href'],soup.select(".a-text-left a[href^='/release']")))
+    df['link']=links
+    df.insert(0,'year',yr)
+    return df
+    
+def getYearDataByYears():
+    df=getYearDataByYear(2019)
+    for i in range(2018,2007,-1):
+        df=df.append(getYearDataByYear(i))
+        print(f"{i}-done!")
+    df.to_csv("allYearsMovies.csv",index=False)
+    return df
+
+path="https://www.boxofficemojo.com/release/rl3059975681/?ref_=bo_yld_table_1"
+
+def getMovieDetail(url):
+    req=requests.get(url)
+    soup=BeautifulSoup(req.text,"html.parser")
+    val=soup.select(".mojo-summary-values>div.a-section:nth-of-type(4)>span:nth-of-type(2)")[0].text.split()
+    val1=soup.select(".a-box-inner>a[href*='/cast?']")[0]['href']
+    df=pd.read_html(val1)
+    return val,val1,df[1] if(len(df)>1) else df[0]
+
+def getMoviesDetail(limit=10):
+    years=[]
+    ranks=[]
+    g=[]
+    links=[]
+    count=0
+    df=pd.read_csv("allYearsMovies.csv")
+    rows=list(zip(df['year'],df['Rank'],df['link']))
+    for year,Rank,link in rows:
+        if(os.path.exists(f"cast/{year}-{Rank}.csv")):
+            print(f"{year}-{Rank} passed")
+        else:
+            genres,url,df1=getMovieDetail(f"https://www.boxofficemojo.com{link}")
+            df1.to_csv(f"cast/{year}-{Rank}.csv",index=False)
+            count+=1
+            print(f"{year}-{Rank} generated")
+            years.append(year)
+            ranks.append(Rank)
+            g.append(genres)
+            links.append(url)
+            if(count>=limit):break
+        
+    df2=pd.DataFrame({'year':years,'rank':ranks,'genres':g,'link':links})
+    if(not os.path.exists("movies.csv")):
+        df2.to_csv("movies.csv",index=False)
+    else:
+        df3=pd.read_csv("movies.csv")
+        df2=df3.append(df2)
+        df2.to_csv("movies.csv",index=False)
+    return df2
+
+import time
+
+while True:
+    df=getMoviesDetail(15)
+    time.sleep(15)
+
+#df=getMoviesDetail(25)
+#
+#df=getMoviesDetail(25)
+#
+#df=getMoviesDetail(25)
