@@ -252,10 +252,71 @@ def getMoviesDetail(limit=10):
 
 import time
 
-while True:
-    df=getMoviesDetail(15)
-    time.sleep(15)
+#while True:
+#    df=getMoviesDetail(15)
+#    time.sleep(15)
 
+
+def getMovieCastStats(file):
+    df=pd.read_csv(file)
+    if(df.shape[1]!=3):
+        return (0,0,0,0)
+    all=df.shape[0]
+    mem=df[df.iloc[:,1]=="Members only"].shape[0]
+    t5k=df[df.iloc[:,1]=="Top 5000"].shape[0]
+    t500=df[df.iloc[:,1]=="Top 500"].shape[0]
+    t100=all-mem-t5k-t500
+    return (t100,t500,t5k,mem)
+
+def getAllMovieCastStats():
+    t100,t500,t5k,mem=[],[],[],[]
+    df=pd.read_csv("allYearsMovies.csv")
+    rows=list(zip(df['year'],df['Rank']))
+    for year,Rank in rows:
+        if(os.path.exists(f"cast/{year}-{Rank}.csv")):
+            a,b,c,d=getMovieCastStats(f"cast/{year}-{Rank}.csv")
+            t100.append(a)
+            t500.append(b)
+            t5k.append(c)
+            mem.append(d)
+            print(f"{year}-{Rank} passed")
+    print("all files are don")
+    time.sleep(10)
+    df['t100']=t100
+    df['t500']=t500
+    df['t5k']=t5k
+    df['mem']=mem
+    df.to_csv('allYearsMoviesWithCast.csv',index=False)
+    return df
+
+def getWeekStats():
+    df=pd.read_csv("weeks(2008-2019).csv")
+    df["Top 10 Gross"]=df["Top 10 Gross"].apply(lambda x:moneyToNum(x))
+    df["Overall Gross"]=df["Overall Gross"].apply(lambda x:moneyToNum(x))
+    df=df.groupby('week',as_index=False).mean()
+#    df["Releases"]=df["Releases"].apply(lambda x:moneyToNum(x))
+    df=df.iloc[:,[0,2,3,4]]
+    df.to_csv('weekStats',index=False)
+    return df
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df=getWeekStats()
+#sns.lineplot(data=df,x="week",y=["Releases","Top 10 Gross"])
+#plt.plot('week','Top 10 Gross',data=df)
+plt.figure()
+f, axes = plt.subplots(2, 1)
+axes[0].plot('week', 'Release',data=df)
+axes[0].set_ylabel('Release')
+
+axes[1].plot(x, y2)
+axes[1].set_ylabel('y2')
+
+plt.plot('week','Releases',data=df)
+plt.legend()
+
+#df=getAllMovieCastStats()
 #df=getMoviesDetail(25)
 #
 #df=getMoviesDetail(25)

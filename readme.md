@@ -41,6 +41,7 @@ https://www.boxofficemojo.com/weekend/?view=wknd&wknd=1&sort=year&order=DESC&p=.
 （数据中对于假日周末会计算两次，需要把重复的票房数据去除）,然后针对csv文件中留下的每周详情链接进一步抓取数据，获得每周票房冠军
 相关的数据，至此我们可以获得数据包括（年份，周次，本周前十票房总和，本周票房总和，本周上映数，本周票房冠军票房，本周票房冠军已放映周数）
 接下来用pandas.DataFrame.shift和join即可
+关于groupby:https://pandas.pydata.org/pandas-docs/stable/user_guide/groupby.html
 </p>
 
 
