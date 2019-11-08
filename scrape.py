@@ -299,22 +299,119 @@ def getWeekStats():
     df.to_csv('weekStats',index=False)
     return df
 
-import matplotlib.pyplot as plt
-import seaborn as sns
+def getOpeningStats():
+    df=pd.read_csv("yearsFormated.csv")
+    df1=df.shift(periods=-1,fill_value=0)
+    df1=df1.loc[:,['Year','Week','Top 10 Gross','Overall Gross']]
+    df1.columns=['lYear','lWeek','lTop 10 Gross','lOverall']
+    df=df.join(df1)
+    df=df.iloc[:-1,:]
+    lTop,lGross,lTGross,lWeeks=[],[],[],[]
+    for yr,wk in list(zip(df['lYear'],df['lWeek'])):
+        df1=pd.read_csv(f"dataset/{yr}-{wk}.csv")
+        lTop.append(df1.loc[0,'Release'])
+        lGross.append(moneyToNum(df1.loc[0,'Gross']))
+        lTGross.append(moneyToNum(df1.loc[0,'Total Gross']))
+        lWeeks.append(df1.loc[0,'Weeks'] if(df1.loc[0,'Weeks']!="-") else 1)
+        print(f"{yr}-{wk} done")
+    df['lTop']=lTop
+    df['lGross']=lGross
+    df['lTGross']=lTGross
+    df['lWeeks']=lWeeks
+    df1=pd.read_csv("weekStats.csv")
+    wT10g,wOverallg,wRelease=[],[],[]
+    
+    for wk in list(df['Week']):
+        print(f"{wk} is comming")
+        if(wk<=52):
+            wT10g.append(df1.iloc[wk-1,1])
+            wOverallg.append(df1.iloc[wk-1,2])
+            wRelease.append(df1.iloc[wk-1,3])
+        else:
+            wT10g.append(0)
+            wOverallg.append(0)
+            wRelease.append(0)
+    df['wT10Gross']=wT10g
+    df['wOverallGross']=wOverallg
+    df['wRelease']=wRelease
+    df.to_csv("frame1.csv",index=False)
+    return df
 
-df=getWeekStats()
-#sns.lineplot(data=df,x="week",y=["Releases","Top 10 Gross"])
-#plt.plot('week','Top 10 Gross',data=df)
-plt.figure()
-f, axes = plt.subplots(2, 1)
-axes[0].plot('week', 'Release',data=df)
-axes[0].set_ylabel('Release')
+def getNewMovies(yr,wk):
+    df=pd.read_csv(f"dataset/{yr}-{wk}.csv")
+    df=df.loc[(df["LW"]=="-") & ((df["Weeks"]==1)|(df["Weeks"]=="1"))]
+    return df
 
-axes[1].plot(x, y2)
-axes[1].set_ylabel('y2')
+def getAllNewMovies():
+    df=pd.read_csv("yearsFormated.csv")
+    df1=getNewMovies(2008,1)
+    df1=df1.iloc[0:0]
+    for yr,wk in list(zip(df["Year"],df["Week"])):
+        df2=getNewMovies(yr,wk)
+        df1=df1.append(df2)
+        print(f"{yr}-{wk} done!")
+    df2=pd.read_csv("allYearsMoviesWithCast.csv")
+    df1=df1.groupby(["Release","Distributor"],as_index=False).last()
+    df3=pd.merge(df1,df2,left_on=["Release","Distributor"],right_on=["Release","Distributor"])
+    df3=df3.sort_values(["year_x","week","Rank_x"],ascending=[False,False,True])
+    df3.to_csv("frame2.csv",index=False)
+    return df1,df2,df3
 
-plt.plot('week','Releases',data=df)
-plt.legend()
+def findDuplicates(arr):
+    seen = {}
+    dupes = []
+    for x in arr:
+        if x not in seen:
+            seen[x] = 1
+        else:
+            if seen[x] == 1:
+                dupes.append(x)
+            seen[x] += 1
+    return seen,dupes
+
+def getThisAndNextWeekDataset():
+    df=pd.read_csv("frame1.csv")
+    dfs=[]
+    for yr1,wk1,yr2,wk2 in list(zip(df["lYear"],df["lWeek"],df["Year"],df["Week"])):
+        df1=pd.read_csv(f"dataset/{yr1}-{wk1}.csv")
+        df2=pd.read_csv(f"dataset/{yr2}-{wk2}.csv")
+        dff=pd.merge(df1,df2,on=["Release","Distributor"])
+        dfs.append(dff)
+        dff["Gross_x"]=dff["Gross_x"].apply(lambda x:moneyToNum(x))
+        dff["Total Gross_x"]=dff["Total Gross_x"].apply(lambda x:moneyToNum(x))
+        dff["Gross_y"]=dff["Gross_y"].apply(lambda x:moneyToNum(x))
+        dff["Total Gross_y"]=dff["Total Gross_y"].apply(lambda x:moneyToNum(x))
+        print(f"{yr1}-{wk1}-{yr2}-{wk2} done")
+    df=pd.concat(dfs)
+    df=df.loc[(df["Weeks_x"]!="-")|(df["Weeks_y"]!="-")]
+    df=df.loc[(df["Weeks_x"]!="-")|(df["Weeks_y"]!=1)]
+    df=df.loc[(df["Weeks_x"]!="-")|(df["Weeks_y"]!="1")]
+    Weeks_y=[]
+    for wks1,wks2 in list(zip(df["Weeks_x"],df["Weeks_y"])):
+        print(f"{wks1}-{wks2}")
+        if (wks2==1 or wks2=="1" or wks2=="-"):
+            
+            Weeks_y.append(int(wks1)+1)
+        else:
+            Weeks_y.append(int(wks2))
+        
+    df["Weeks_y"]=Weeks_y
+    df.to_csv("frame3.csv",index=False)
+    return df
+
+def getOpeningMovieStats():
+    df1=pd.read_csv("frame1.csv")
+    df2=pd.read_csv("frame2.csv")
+    df1=df1.loc[:,["Year","Week","Releases","wT10Gross","wRelease","lGross","lTGross","lWeeks","lTop 10 Gross","lOverall"]]
+    df2=df2.loc[:,["year_x","week","Release","Distributor","Theaters","t100","t500","t5k","mem","Gross_x"]]
+    df=pd.merge(df1,df2,left_on=["Year","Week"],right_on=["year_x","week"])
+    df["Gross_x"]=df["Gross_x"].apply(lambda x:moneyToNum(x))
+    df=df.loc[df["Theaters"]!="-"]
+    df.to_csv("frame4.csv",index=False)
+    return df
+
+df=getOpeningMovieStats()
+
 
 #df=getAllMovieCastStats()
 #df=getMoviesDetail(25)

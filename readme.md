@@ -19,17 +19,20 @@ email:chenxiao@sincereedu.com
 
 1 生成训练数据集，要求包含以下字段：
 <p>数据框架一</p>
+<p>frame1.csv</p>
 <ul>
-<li>year-年份</li>
-<li>week-周次</li>
-<li>weekTop12GrossHistory-近n年当周票房榜前12票房总和平均</li>
-<li>weekOverallGrossHistory-近n年当周票房总和平均</li>
-<li>weekTotalMoviesHistory-近n年当周电影总数平均</li>
-<li>lastWeekTop12Gross-上周票房榜前12票房总和</li>
-<li>lastWeekOverallGross-上周票房总和</li>
-<li>lastWeekMovies-上周电影总数</li>
-<li>lastWeekTop1Gross-上周票房冠军票房</li>
+<li>Year-年份</li>
+<li>Week-周次</li>
+<li>Releases-本周上映片数</li>
+<li>wT10Gross-历史本周前十票房平均</li>
+<li>wRelease-历史本周影片数平均</li>
+<li>lGross-上周票房冠军票房</li>
+<li>lTGross-上周票房冠军累计票房</li>
+<li>lWeeks-上周票房冠军累计放映周数</li>
+<li>lTop 10 Gross-上周票房前十票房</li>
+<li>lOverall-上周总票房</li>
 <li>lastWeekTop1WeekSpan-上周票房冠军已放映周数</li>
+<li>["Year","Week","Releases","wT10Gross","wRelease","lGross","lTGross","lWeeks","lTop 10 Gross","lOverall"]</li>
 </ul>
 相关链接：
 https://www.boxofficemojo.com/weekend/by-year/2018/（最新链接）
@@ -47,14 +50,19 @@ https://www.boxofficemojo.com/weekend/?view=wknd&wknd=1&sort=year&order=DESC&p=.
 
 
 <p>数据框架二</p>
+<p>frame2.csv</p>
 <ul>
-<li>year-年份</li>
-<li>week-周次</li>
-<li>title-片名</li>
-<li>starNum-明星数</li>
-<li>director-是否名导演（0或1）</li>
-<li>theater-上映影院数</li>
-<li>weekendGross-本周末票房（目标变量）</li>
+<li>year_x-上映年份</li>
+<li>week-上映周次</li>
+<li>Release-片名</li>
+<li>Distributor-发行商</li>
+<li>Theaters-上映影院数</li>
+<li>t100-排名100内演员数</li>
+<li>t500-排名500内演员数</li>
+<li>t5k-排名5k内演员数</li>
+<li>mem-其他演员数</li>
+<li>Gross_x-本周末票房（目标变量）</li>
+<li>["year_x","week","Release","Distributor","Theaters","t100","t500","t5k","mem","Gross_x"]</li>
 </ul>
 有效链接：
 https://www.boxofficemojo.com/year/2019/?ref_=bo_yl_table_1
@@ -71,16 +79,20 @@ https://www.boxofficemojo.com/people/?view=Director&sort=sumgross&order=DESC&p=.
 新思路：从目前有效链接入手把每一年所有影片的链接先抓下来，然后从每一个链接入手进一步抓取imdb链接，再进入imdb页面抓取该影片卡司阵容
 可参考scrape.py文件中的getWeekendDataByYear和getWeekendDataByYears两个函数
 <p>数据框架三</p>
+<p>frame3.csv</p>
 <ul>
-<li>year-年份</li>
-<li>week-周次</li>
-<li>title-片名</li>
-<li>LW-上周排名</li>
-<li>LWGross-上周票房</li>
-<li>GrossTotal-到上周为止的票房总计</li>
-<li>weekNum-上映周数</li>
-<li>theater-上映影院数（本周）</li>
-<li>weekendGross-本周末票房（目标变量）</li>
+<li>year_y-影片上映年份</li>
+<li>week_y-影片上映周次</li>
+<li>Release-片名</li>
+<li>Distributor-发行商</li>
+<li>Rank_x-上周排名</li>
+<li>Theaters_x-上周上映影院数</li>
+<li>Theaters_y-本周上映影院数</li>
+<li>Gross_x-上周票房</li>
+<li>Total Gross_x-到上周为止的票房总计</li>
+<li>Weeks_y-本周上映周数（>1）</li>
+<li>Gross_y-本周票房（目标变量）</li>
+
 </ul>
 相关链接：
 https://www.boxofficemojo.com/weekend/chart/?yr=2019&wknd=42&p=.htm
