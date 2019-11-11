@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Sun Nov 10 21:43:38 2019
+
+@author: shawn
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Thu Oct 10 19:46:21 2019
 
 @author: shawn
@@ -12,10 +19,6 @@ import matplotlib.pyplot as plt
 from re import sub
 from decimal import Decimal
 
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.wrappers.scikit_learn import KerasClassifier
-from keras.utils import np_utils
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
@@ -46,7 +49,7 @@ dataset = pd.read_csv('frame4.csv')
 X=dataset.iloc[:,[0,1,2,3,4,5,6,7,8,9,14,15,16,17,18]]
 #X=dataset.iloc[:,1:5]
 y=dataset.iloc[:,20]
-dummy_y=np_utils.to_categorical(y)
+#dummy_y=np_utils.to_categorical(y)
 
 
 from sklearn.preprocessing import  MinMaxScaler
@@ -56,26 +59,20 @@ X= sc.fit_transform(X)
 #y=sc.fit_transform(y)
 
 
-def build_model():
-    regressor = Sequential()
-    regressor.add(Dense(output_dim=11, input_dim=15,activation='relu'))
-    regressor.add(Dense(output_dim=11, activation='relu'))
-    regressor.add(Dense(output_dim=11, activation='relu'))
-    regressor.add(Dense(output_dim=4,activation='softmax'))
-    regressor.compile(optimizer='adam', loss='categorical_crossentropy',  metrics=['accuracy'])
-    return regressor
+
 
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, dummy_y, test_size=0.3,random_state=0)
-model=build_model()
-model.fit(X_train,y_train, batch_size = 10, epochs = 100)
-y_pred=model.predict(X_test)
+from sklearn.linear_model import LogisticRegression
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,random_state=0)
+clf = LogisticRegression(random_state=0, solver='lbfgs',multi_class='ovr').fit(X_train, y_train)
 
-t1=np.argmax(y_pred, axis=1)
-t2=np.argmax(y_test, axis=1)
+y_pred=clf.predict(X_test)
+
+#t1=np.argmax(y_pred, axis=1)
+#t2=np.argmax(y_test, axis=1)
 
 from sklearn.metrics import confusion_matrix
-c1=confusion_matrix(t2,t1)
+c1=confusion_matrix(y_test,y_pred)
 print(c1)
 #
 #from keras import Sequential

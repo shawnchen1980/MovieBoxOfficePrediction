@@ -12,6 +12,8 @@ import requests
 import os.path
 from decimal import Decimal
 from re import sub
+import matplotlib.pyplot as plt
+
 #url="https://www.boxofficemojo.com/weekend/chart/?yr=2018&wknd=01&p=.htm"
 #
 #req=requests.get(url)
@@ -399,18 +401,67 @@ def getThisAndNextWeekDataset():
     df.to_csv("frame3.csv",index=False)
     return df
 
+#def generateCat(x):
+#    if(x<4000):
+#        return 0
+#    elif(x>4000) and (x<8000):
+#        return 1
+#    elif(x>8000) and (x<16000):
+#        return 2
+#    elif(x>16000) and (x<40000):
+#        return 3
+#    elif(x>40000) and (x<120000):
+#        return 4
+#    elif(x>120000) and (x<1000000):
+#        return 5
+#    elif(x>1000000) and (x<15000000):
+#        return 6
+#    else:
+#        return 7
+    
+def generateCat(x):
+    if(x<100000):
+        return 0
+    elif(x>100000) and (x<1000000):
+        return 1
+    elif(x>1000000) and (x<10000000):
+        return 2
+    else:
+        return 3
+
 def getOpeningMovieStats():
     df1=pd.read_csv("frame1.csv")
     df2=pd.read_csv("frame2.csv")
     df1=df1.loc[:,["Year","Week","Releases","wT10Gross","wRelease","lGross","lTGross","lWeeks","lTop 10 Gross","lOverall"]]
     df2=df2.loc[:,["year_x","week","Release","Distributor","Theaters","t100","t500","t5k","mem","Gross_x"]]
     df=pd.merge(df1,df2,left_on=["Year","Week"],right_on=["year_x","week"])
-    df["Gross_x"]=df["Gross_x"].apply(lambda x:moneyToNum(x))
     df=df.loc[df["Theaters"]!="-"]
+    df["Gross_x"]=df["Gross_x"].apply(lambda x:moneyToNum(x))
+    df["Cat"]=df["Gross_x"].apply(lambda x:generateCat(x))
     df.to_csv("frame4.csv",index=False)
     return df
 
-df=getOpeningMovieStats()
+#生成一年52周平均票房与影片数的波动图
+def generateWeekstatFig():
+    df=pd.read_csv("weekStats.csv",index_col=0)
+    fig,(ax1,ax2)=plt.subplots(2,1)
+    ax1.plot(df.iloc[:,[0,1]])
+    ax1.set_ylabel("Average Gross")
+    ax1.legend(["Top 10","Overall"],loc="upper right")
+    ax2.plot(df.iloc[:,[2]])
+    ax2.set_ylabel("Releases")
+    ax2.set_xlabel("Week#")
+    fig.suptitle("Average Gross and Releases Number for Each week within a Year")
+
+#生成直方图，用于表示首周末票房的分布    
+def generateOpeningGrossHist():
+    df=pd.read_csv("frame4.csv")
+    fig,(ax1,ax2)=plt.subplots(2,1)
+    ax1.hist(df["Gross_x"])
+    ax2.hist(df["Cat"])
+
+generateOpeningGrossHist()
+#df=getOpeningMovieStats()
 
 
 #df=getAllMovieCastStats()
