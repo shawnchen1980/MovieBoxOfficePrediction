@@ -55,7 +55,7 @@ print("Mean squared error: %.2f"
 print('Variance score: %.2f' % r2_score(y_test, y_pred))
 
 
-train_error =  np.abs(y - y_pred)
+train_error =  np.abs(y_test - y_pred)
 mean_error = np.mean(train_error)
 min_error = np.min(train_error)
 max_error = np.max(train_error)
