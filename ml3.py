@@ -54,8 +54,14 @@ y=dataset.iloc[:,-1]
 #dummy_y=np_utils.to_categorical(y)
 
 
-#from sklearn.preprocessing import  MinMaxScaler
-#sc= MinMaxScaler()
+from sklearn.preprocessing import  MinMaxScaler
+sc= MinMaxScaler()
+X= sc.fit_transform(X)
+y= y.values.reshape(-1,1)
+y=sc.fit_transform(y)
+
+#from sklearn.preprocessing import  StandardScaler
+#sc= StandardScaler()
 #X= sc.fit_transform(X)
 #y= y.values.reshape(-1,1)
 #y=sc.fit_transform(y)
@@ -80,6 +86,15 @@ print("Mean squared error: %.2f"
       % mean_squared_error(y_test, y_pred))
 # Explained variance score: 1 is perfect prediction
 print('Variance score: %.2f' % r2_score(y_test, y_pred))
+y_test=y_test.reshape((1,-1))
+y_pred=y_pred.reshape((1,-1))
+train_error =  np.abs(y - y_pred)
+mean_error = np.mean(train_error)
+min_error = np.min(train_error)
+max_error = np.max(train_error)
+std_error = np.std(train_error)
+
+print(mean_error,min_error,max_error,std_error)
 
 #t1=np.argmax(y_pred, axis=1)
 #t2=np.argmax(y_test, axis=1)
