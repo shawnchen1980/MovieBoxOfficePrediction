@@ -62,6 +62,16 @@ max_error = np.max(train_error)
 std_error = np.std(train_error)
 
 print(mean_error,min_error,max_error,std_error)
+
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+#ax.scatter(y_test, y_pred)
+ax.scatter(y_test[:5500], y_pred[:5500])
+ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
+ax.set_xlabel('Measured')
+ax.set_ylabel('Predicted')
+plt.show()
 #seed=7
 #np.random.seed(seed)
 #estimators = []

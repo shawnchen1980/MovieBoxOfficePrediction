@@ -120,9 +120,10 @@ print(mean_error,min_error,max_error,std_error)
 #y_pred= regressor.predict(X_test)
 #
 fig, ax = plt.subplots()
-ax.scatter(y_test, y_pred)
+#ax.scatter(y_test, y_pred)
+ax.scatter(y_test[0,:5500], y_pred[0,:5500])
 ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
-ax.set_xlabel('Measured')
+ax.set_xlabel('Measured11')
 ax.set_ylabel('Predicted')
 plt.show()
 #from sklearn.metrics import r2_score
